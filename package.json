@@ -1,0 +1,17 @@
+{
+  "name": "snake-inverse-sinematics-ts",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^4.4.4",
+    "vite": "^2.7.2"
+  },
+  "dependencies": {
+    "math2d": "^4.0.1",
+    "pixi.js": "^5.3.11"
+  }
+}
