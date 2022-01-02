@@ -1,18 +1,30 @@
-import { Vec, vecAdd, vecClone, vecGetLength, vecSubtract, _vec } from "math2d";
+import { Vec, vecAdd, vecClone, vecSubtract, _vec } from "math2d";
 import "./style.css";
 
 export class Slice {
   a!: Vec;
   b: Vec = _vec(0, 0);
+  sw!: number;
   angle: number;
   child: Slice | undefined;
-  color = "#FF0000";
+  color = "#FFC5AC";
 
-  constructor(private len: number, private i: number, public parent?: Slice) {
+  constructor(private len: number, i: number, public parent?: Slice) {
     if (parent) {
       this.a = vecClone(parent.b);
     }
-    this.angle = i;
+    this.sw = this.map(i, 0, SLICE_COUNT, 4, 25);
+    this.angle = 0;
+  }
+
+  private map(
+    n: number,
+    start1: number,
+    stop1: number,
+    start2: number,
+    stop2: number
+  ) {
+    return ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2;
   }
 
   setPosition(x: number, y: number) {
@@ -39,8 +51,10 @@ export class Slice {
 
     this.angle = Math.atan2(dir.y, dir.x);
 
-    dir.x = (dir.x * this.len) / vecGetLength(dir);
-    dir.y = (dir.y * this.len) / vecGetLength(dir);
+    const mag = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
+
+    dir.x = (dir.x * this.len) / mag;
+    dir.y = (dir.y * this.len) / mag;
 
     dir.x = dir.x * -1;
     dir.y = dir.y * -1;
@@ -49,7 +63,7 @@ export class Slice {
   }
 
   draw(g: Graphic) {
-    g.drawLine(this.a, this.b, this.color, this.i * 0.2);
+    g.drawLine(this.a, this.b, this.color, this.sw);
   }
 }
 
@@ -61,23 +75,31 @@ class Graphic {
     this.ctx.fillStyle = "black";
   }
 
-  drawLine(a: Vec, b: Vec, _c: string, w = 2) {
+  drawLine(
+    a: Vec,
+    b: Vec,
+    _c: string,
+    w = 2,
+    lineCap: CanvasLineCap = "round"
+  ) {
     this.ctx.beginPath();
     this.ctx.moveTo(a.x, a.y);
     this.ctx.lineTo(b.x, b.y);
     this.ctx.strokeStyle = _c;
     this.ctx.lineWidth = w;
+    this.ctx.lineCap = lineCap;
     this.ctx.stroke();
     this.ctx.strokeStyle = "black";
   }
 }
 
-const WIDTH = 720;
-const HEIGHT = 480;
-const SLICE_LEN = 10;
+const SCALE = 1.5;
+const WIDTH = 720 * SCALE;
+const HEIGHT = 480 * SCALE;
+const SLICE_LEN = 25;
 const SLEEP = 1;
 
-const SLICE_COUNT = 30;
+const SLICE_COUNT = 20;
 
 const canvas = document.querySelector("canvas")!;
 const ctx = canvas.getContext("2d")!;
@@ -91,8 +113,8 @@ const draw = (fn: () => void) => {
   }, SLEEP);
 };
 
-const w = (canvas.width = 720);
-const h = (canvas.height = 480);
+const w = (canvas.width = WIDTH);
+const h = (canvas.height = HEIGHT);
 g.drawRect(0, 0, w, h, "#000");
 
 let current = new Slice(SLICE_LEN, 0);
@@ -102,16 +124,16 @@ for (let i = 0; i < SLICE_COUNT; i++) {
   current.child = next;
   current = next;
 }
-current.setColor("#00FF00");
+current.setColor("#FFF");
 const slice: Slice = current;
 
 let mouseX = WIDTH / 2;
 let mouseY = HEIGHT / 2;
 
 draw(() => {
+  slice.folow(mouseX, mouseY);
   slice.update();
   slice.draw(g);
-  slice.folow(mouseX, mouseY);
   let next = slice.parent;
   while (next) {
     next.folow(next.child?.a.x!, next.child?.a.y!);

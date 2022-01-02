@@ -6,8 +6,33 @@ body {
 
   margin: 0;
   padding: 0;
+
+  background-color: hsl(0, 0%, 80%);
+  animation: rainbow 20s infinite;
 }
 
 canvas {
   background-color: black;
+  border-radius: 10px;
+}
+
+@keyframes rainbow {
+  0%{
+    background-color: hsl(0, 100%, 85%);
+  }
+  20% {
+    background-color: hsl(39, 100%, 85%);
+  }
+  40% {
+    background-color: hsl(60, 100%, 85%);
+  }
+  60% {
+    background-color: hsl(120, 100%, 84%);
+  }
+  80% {
+    background-color: hsl(240, 100%, 85%);
+  }
+  100% {
+    background-color: hsl(300, 100%, 81%);
+  }
 }

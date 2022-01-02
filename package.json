@@ -4,14 +4,16 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "devDependencies": {
+    "gh-pages": "^3.2.3",
     "typescript": "^4.4.4",
     "vite": "^2.7.2"
   },
   "dependencies": {
-    "math2d": "^4.0.1",
-    "pixi.js": "^5.3.11"
+    "math2d": "^4.0.1"
   }
 }
